@@ -1,10 +1,7 @@
-from hashlib import pbkdf2_hmac
 import math
 from random import randrange
 
-from numpy import true_divide
-
-class ndm:
+class mansfieldcurve:
     def __init__(self,x, y):
         self.asize = [x,y]
         self.locs = []
@@ -59,7 +56,7 @@ class ndm:
                 
                 
 if __name__ == "__main__":
-    curve = ndm(3,3)
+    curve = mansfieldcurve(3,3)
     print(curve.locs)
     curve.iterate(10)
     print(curve.locs)

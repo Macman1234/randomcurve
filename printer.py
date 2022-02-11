@@ -1,7 +1,7 @@
-import ndmansfield
+import mhcurve
 import svgwrite
 
-curve = ndmansfield.ndm(32,32)
+curve = mhcurve.mansfieldcurve(32,32)
 curve.iterate(1000000)
 
 dwg = svgwrite.Drawing('test5.svg', profile='tiny')
