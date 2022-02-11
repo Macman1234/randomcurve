@@ -22,10 +22,10 @@ class ndm:
             beginorend = randrange(2)
             if not beginorend:
                 p = 0
-                print("starting from beginning")
+                #print("starting from beginning")
             else:
                 p = len(self.locs)-1
-                print("starting from end")
+                #print("starting from end")
             pos = self.locs[p]
             neighbors = [[pos[0]-1,pos[1]],[pos[0]+1,pos[1]],[pos[0],pos[1]-1],[pos[0],pos[1]+1]]
             looking = True
