@@ -3,8 +3,14 @@ from random import randrange
 
 class mansfieldcurve:
     def __init__(self,x, y):
-        self.asize = [x,y]
+        self.asize = [x,y] # because size was taken? i forget.
         self.locs = []
+        
+        # generate path snaking back and forth across
+        # this should probably be a hilbert curve or something with more
+        # uniform density but with enough iterations given the size this is fine
+        # if you ever want to use this for something more serious than
+        # simple graphics, please change this.
         
         for i in range(self.asize[0]*self.asize[1]):
             currenty = math.floor(i / x)
@@ -15,47 +21,40 @@ class mansfieldcurve:
             self.locs.append([currentx,currenty])
     
     def iterate(self,num):
+        # for each iteration, do one monte carlo swap
         for n in range(num):
-            beginorend = randrange(2)
+            beginorend = randrange(2) # choose whether to start for beginning point or end point
             if not beginorend:
-                p = 0
-                #print("starting from beginning")
+                p = 0 # starter index
             else:
-                p = len(self.locs)-1
-                #print("starting from end")
+                p = len(self.locs)-1 # ending index
             pos = self.locs[p]
-            neighbors = [[pos[0]-1,pos[1]],[pos[0]+1,pos[1]],[pos[0],pos[1]-1],[pos[0],pos[1]+1]]
+            neighbors = [[pos[0]-1,pos[1]],[pos[0]+1,pos[1]],[pos[0],pos[1]-1],[pos[0],pos[1]+1]] # find position of neighbors
             looking = True
-            while looking:
+            while looking: # bruteforce loop through to look for indeces of neighbors. This sucks!
                 chooseneighbor = neighbors[randrange(4)]
-                #print(chooseneighbor)
                 try:
                     p2 = self.locs.index(chooseneighbor)
-                    if abs(p2 - p) != 1: #if it's already connected, stop.
+                    if abs(p2 - p) != 1: #if it's not the neighbor that's already connected, stop looking.
                         looking = False
                 except ValueError:
                     looking = True
             pos2 = chooseneighbor
-            #print(pos)
-            #print(pos2)
-            #print(p)
-            #print(p2)
-            if not beginorend:
+            
+            # see the cited mansfield paper for info on this operation. involves reversing the list between
+            # the two points
+            if not beginorend: # swap chosen point around beginning
                 section = self.locs[0:p2:1]
-                #print(section)
                 section.reverse()
-                #print(section)
                 self.locs = section+self.locs[p2:]
-            else:
+            else: # swap chosen point around end
                 section = self.locs[p2+1:]
-                #print(section)
                 section.reverse()
-                #print(section)
                 self.locs = self.locs[0:p2+1] + section
             
                 
                 
-if __name__ == "__main__":
+if __name__ == "__main__": # debugging demo
     curve = mansfieldcurve(3,3)
     print(curve.locs)
     curve.iterate(10)

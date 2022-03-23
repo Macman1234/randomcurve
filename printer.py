@@ -1,10 +1,17 @@
 import mhcurve
 import svgwrite
 
-curve = mhcurve.mansfieldcurve(32,32)
-curve.iterate(1000000)
+# these should eventually be command line arguments
+filename = "test6"
+itercount = 100000
+xsize = 64
+ysize = 32
 
-dwg = svgwrite.Drawing('test5.svg', profile='tiny')
+curve = mhcurve.mansfieldcurve(xsize,ysize)
+curve.iterate(itercount)
+
+# draw it using svgwrite
+dwg = svgwrite.Drawing(filename+".svg", profile='tiny')
 for i in range(len(curve.locs)-1):
     x1 = curve.locs[i][0]*8+10
     y1 = curve.locs[i][1]*8+10
