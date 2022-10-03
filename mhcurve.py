@@ -11,6 +11,9 @@ class mansfieldcurve:
         # uniform density but with enough iterations given the size this is fine
         # if you ever want to use this for something more serious than
         # simple graphics, please change this.
+        # i'm not joking if this is used for science i'll be very pissed
+        # if someone leaves it at a snaking path without investigating
+        # whether that causes distribution problems
         
         for i in range(self.asize[0]*self.asize[1]):
             currenty = math.floor(i / x)
@@ -31,11 +34,11 @@ class mansfieldcurve:
             pos = self.locs[p]
             neighbors = [[pos[0]-1,pos[1]],[pos[0]+1,pos[1]],[pos[0],pos[1]-1],[pos[0],pos[1]+1]] # find position of neighbors
             looking = True
-            while looking: # bruteforce loop through to look for indeces of neighbors. This sucks!
+            while looking: # bruteforce loop through to look for indeces of neighbors. This sucks!!!
                 chooseneighbor = neighbors[randrange(4)]
                 try:
                     p2 = self.locs.index(chooseneighbor)
-                    if abs(p2 - p) != 1: #if it's not the neighbor that's already connected, stop looking.
+                    if abs(p2 - p) != 1: # if it's not the neighbor that's already connected, stop looking.
                         looking = False
                 except ValueError:
                     looking = True
@@ -54,7 +57,7 @@ class mansfieldcurve:
             
                 
                 
-if __name__ == "__main__": # debugging demo
+if __name__ == "__main__": # debugging demo - print starter 3x3 curve and curve after 10 iter
     curve = mansfieldcurve(3,3)
     print(curve.locs)
     curve.iterate(10)
