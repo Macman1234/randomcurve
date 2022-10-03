@@ -3,7 +3,7 @@ from random import randrange
 
 class mansfieldcurve:
     def __init__(self,x, y):
-        self.asize = [x,y] # because size was taken? i forget.
+        self.dim = [x,y]
         self.locs = []
         
         # generate path snaking back and forth across
@@ -15,7 +15,7 @@ class mansfieldcurve:
         # if someone leaves it at a snaking path without investigating
         # whether that causes distribution problems
         
-        for i in range(self.asize[0]*self.asize[1]):
+        for i in range(self.dim[0]*self.dim[1]):
             currenty = math.floor(i / x)
             if not (currenty % 2):
                 currentx = i % x
@@ -26,27 +26,29 @@ class mansfieldcurve:
     def iterate(self,num):
         # for each iteration, do one monte carlo swap
         for n in range(num):
-            beginorend = randrange(2) # choose whether to start for beginning point or end point
-            if not beginorend:
+            beginloc = randrange(2) # choose whether to start for beginning point or end point
+            if beginloc:
                 p = 0 # starter index
             else:
                 p = len(self.locs)-1 # ending index
             pos = self.locs[p]
             neighbors = [[pos[0]-1,pos[1]],[pos[0]+1,pos[1]],[pos[0],pos[1]-1],[pos[0],pos[1]+1]] # find position of neighbors
-            looking = True
-            while looking: # bruteforce loop through to look for indeces of neighbors. This sucks!!!
-                chooseneighbor = neighbors[randrange(4)]
-                try:
-                    p2 = self.locs.index(chooseneighbor)
-                    if abs(p2 - p) != 1: # if it's not the neighbor that's already connected, stop looking.
-                        looking = False
-                except ValueError:
-                    looking = True
-            pos2 = chooseneighbor
+            
+            # remove already connected neighbor from list
+            if beginloc: connecp = 1 # second index
+            else: connecp = len(self.locs)-2 # one before ending index
+            neighbors.remove(self.locs[connecp])
+            
+            # remove out of bounds neighbors
+            
+            neighbors = [n for n in neighbors if n[0] >= 0 and n[0] < self.dim[0] and n[1] >= 0 and n[1] < self.dim[1]]
+            
+            chooseneighbor = neighbors[randrange(len(neighbors))]
+            p2 = self.locs.index(chooseneighbor)
             
             # see the cited mansfield paper for info on this operation. involves reversing the list between
             # the two points
-            if not beginorend: # swap chosen point around beginning
+            if beginloc: # swap chosen point around beginning
                 section = self.locs[0:p2:1]
                 section.reverse()
                 self.locs = section+self.locs[p2:]
