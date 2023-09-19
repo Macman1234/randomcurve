@@ -11,7 +11,8 @@ class mansfieldcurve:
         # uniform density but with enough iterations given the size this is fine
         # if you ever want to use this for something more serious than
         # simple graphics, please change this.
-        # i'm not joking if this is used for science i'll be very pissed
+        
+        # if this is used for science i'll be very mad
         # if someone leaves it at a snaking path without investigating
         # whether that causes distribution problems
         

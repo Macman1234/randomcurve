@@ -1,18 +1,22 @@
 import mhcurve
 import matplotlib.pyplot as plt
 
+picturecount = 10
+
 itercount = 100000
-xsize = 24
-ysize = 24
+xsize = 32
+ysize = 16
 
-curve = mhcurve.mansfieldcurve(xsize,ysize)
-curve.iterate(itercount)
+for i in range(picturecount):
+    curve = mhcurve.mansfieldcurve(xsize,ysize)
+    curve.iterate(itercount)
 
-x = [loc[0] for loc in curve.locs]
-y = [loc[1] for loc in curve.locs]
+    x = [loc[0] for loc in curve.locs]
+    y = [loc[1] for loc in curve.locs]
 
-plt.figure(figsize=(4, 4), dpi=1200)
-plt.plot(x,y,linewidth=3,color="#414040")
-plt.axis('off')
+    fig = plt.figure(figsize=(4, 2), dpi=1200)
+    plt.plot(x,y,linewidth=3,color="#000000")
+    plt.axis('off')
 
-plt.savefig("test3.png", bbox_inches=0)
+    plt.savefig(f"out{i}.png", bbox_inches=0)
+    plt.close(fig)
