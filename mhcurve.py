@@ -1,5 +1,12 @@
 import math
+from multiprocessing import Pool
 from random import randrange
+
+def indexfind(l,i,s,e):
+    try:
+        return l.index(i,s,e)
+    except ValueError:
+        return None
 
 class mansfieldcurve:
     def __init__(self,x, y):
@@ -45,6 +52,26 @@ class mansfieldcurve:
             neighbors = [n for n in neighbors if n[0] >= 0 and n[0] < self.dim[0] and n[1] >= 0 and n[1] < self.dim[1]]
             
             chooseneighbor = neighbors[randrange(len(neighbors))]
+
+            #split up index finding on CPU
+
+            p2 = 0
+
+            #workercount = 8
+            #with Pool(workercount) as workers:
+            #    items = []
+            #    for i in range(len(self.locs)):
+            #        items.append((chooseneighbor))
+#
+#                chunksize = math.ceil(len(self.locs)/workercount)
+#
+ #               starts = [i*chunksize for i in range(workercount)]
+  #              ends = [s+workercount-1 for s in starts]
+   #             ends[-1] = -1
+    #            foundindex = workers.starmap(indexfind,zip(self.locs,items,starts,ends))
+     #           for e in foundindex:
+      #              if e is not None: p2 = e
+                    
             p2 = self.locs.index(chooseneighbor)
             
             # see the cited mansfield paper for info on this operation. involves reversing the list between
@@ -61,7 +88,7 @@ class mansfieldcurve:
                 
                 
 if __name__ == "__main__": # debugging demo - print starter 3x3 curve and curve after 10 iter
-    curve = mansfieldcurve(3,3)
+    curve = mansfieldcurve(9,9)
     print(curve.locs)
     curve.iterate(10)
     print(curve.locs)
