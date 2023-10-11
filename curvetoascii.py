@@ -46,7 +46,7 @@ def curvetoascii(curve):
     for y in range(curve.dim[1]): # scan y-axis
         for x in range(curve.dim[0]): # scan x-axis
             #print(curve.locs)
-            idx = curve.locs.index([x,y])
+            idx = curve.locs.index((x,y))
             out += getcurvechar(curve,idx)
         if y < curve.dim[1]-1: out += "\n"
     return(out)
