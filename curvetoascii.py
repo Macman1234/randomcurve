@@ -3,7 +3,8 @@
 
 
 def getcurvechar(curve,idx):
-    bold = True
+    bold = False
+    arc = True
     if idx == 0:
         neighbordiffs = [
             [curve.locs[idx][0]-curve.locs[idx+1][0],curve.locs[idx][1]-curve.locs[idx+1][1]]
@@ -24,15 +25,19 @@ def getcurvechar(curve,idx):
     left = [1,0]
     if below in neighbordiffs and right in neighbordiffs:
         if bold: return("┏")
+        elif arc: return("╭")
         else: return("┌")
     if below in neighbordiffs and left in neighbordiffs:
         if bold: return("┓")
+        elif arc: return("╮")
         else: return("┐")
     if above in neighbordiffs and right in neighbordiffs:
         if bold: return("┗")
+        elif arc: return("╰")
         else: return("└")
     if above in neighbordiffs and left in neighbordiffs:
         if bold: return("┛")
+        elif arc: return("╯")
         else: return("┘")
     if above in neighbordiffs or below in neighbordiffs:
         if bold: return("┃")
@@ -46,7 +51,10 @@ def curvetoascii(curve):
     for y in range(curve.dim[1]): # scan y-axis
         for x in range(curve.dim[0]): # scan x-axis
             #print(curve.locs)
-            idx = curve.locs.index([x,y])
-            out += getcurvechar(curve,idx)
+            try:
+                idx = curve.locs.index([x,y])
+                out += getcurvechar(curve,idx)
+            except ValueError:
+                out += " "
         if y < curve.dim[1]-1: out += "\n"
     return(out)
