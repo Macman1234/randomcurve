@@ -6,7 +6,7 @@ if __name__ == "__main__":
 
     picturecount = 1
 
-    itercount = 1000000
+    itercount = 100000
     xsize = 40
     ysize = 40
 
