@@ -3,15 +3,19 @@ pub struct Point {
     pub y: usize
 }
 
-pub struct Mansfieldcurve {
+pub struct MansfieldCurve {
     pub xsize: usize,
     pub ysize: usize,
     pub path: Vec<Point>,
 }
 
-impl Mansfieldcurve {
-    pub fn new(xsize: usize, ysize: usize) -> Mansfieldcurve{
-        let mut curve = Mansfieldcurve {
+fn OnEdge(p:Point,xsize:usize,ysize:usize) {
+    if p.x == 0 || p.y == 0 || p.x == xsize || p.y == ysize
+}
+
+impl MansfieldCurve {
+    pub fn new(xsize: usize, ysize: usize) -> MansfieldCurve{
+        let mut curve = MansfieldCurve {
             xsize,
             ysize,
             path: Vec::new()
@@ -27,4 +31,14 @@ impl Mansfieldcurve {
         }
         curve
     }
+}
+
+enum StyleKind {
+    thin,
+    arc,
+    bold,
+}
+
+fn get_curve_char(curve: MansfieldCurve, idx: usize, style: StyleKind) {
+    
 }

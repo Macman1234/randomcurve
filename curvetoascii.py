@@ -1,7 +1,6 @@
 # takes in a list of positions on a grid as a curve
 # and composes an ascii representation for that grid.
 
-
 def getcurvechar(curve,idx):
     bold = False
     arc = True
