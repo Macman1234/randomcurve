@@ -10,7 +10,7 @@ fn main() {
 
     let mut curve = mh_curve::MansfieldCurve::new(32,32);
 
-    curve.iterate(1000000);
+    curve.iterate(100000);
 
-    println!("{}",make_curve_string(&curve, &StyleKind::Arc));
+    println!("{}",make_curve_string(&curve, &StyleKind::Light));
 }
