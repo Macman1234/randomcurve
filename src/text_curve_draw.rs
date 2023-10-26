@@ -1,5 +1,7 @@
 use crate::mh_curve;
+use clap::ValueEnum;
 
+#[derive(Copy, Clone, Debug,PartialEq, Eq, PartialOrd, Ord, ValueEnum)]
 pub enum StyleKind {
     Light,
     Heavy,
@@ -87,7 +89,7 @@ pub fn make_curve_string(curve: &mh_curve::MansfieldCurve, style: &StyleKind) ->
                 None => (),
             }
         }
-        if y < curve.ysize {
+        if y < curve.ysize-1 {
             String::push(&mut curve_string, '\n')
         }
     }
