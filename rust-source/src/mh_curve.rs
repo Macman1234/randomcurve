@@ -18,11 +18,7 @@ impl PartialEq for Point {
     }
 }
 
-pub struct MansfieldCurve {
-    pub xsize: i32,
-    pub ysize: i32,
-    pub path: Vec<Point>,
-}
+// I totally forget why this exists. I forget even more why I kept it.
 /*
 enum Edge {
     Top,
@@ -51,6 +47,15 @@ fn check_edge(p: Point, xsize: i32, ysize: i32) -> Edge {
 }
 */
 
+pub struct MansfieldCurve {
+    pub xsize: i32,
+    pub ysize: i32,
+    pub path: Vec<Point>,
+}
+
+// possible TODO: somehow hash each position so lookups of index
+// based on position are faster. might actually be more overhead than lookup for each
+// neighbor...
 impl MansfieldCurve {
     pub fn new(xsize: i32, ysize: i32) -> MansfieldCurve{
 
@@ -63,7 +68,7 @@ impl MansfieldCurve {
 
         // Fill path with snaking pattern
         // If using this for something more rigorous than
-        // fun animations, investigate whether this poses
+        // fun animations, please investigate whether this poses
         // any problems with density/energy
         for n in 0..(xsize*ysize) {
             let y = n / xsize;
@@ -76,24 +81,28 @@ impl MansfieldCurve {
         }
         curve
     }
-    fn point_valid(&self,p: &Point) -> bool {
-        p.x >= 0 && p.y >= 0 && p.x < self.xsize && p.y < self.ysize
+    fn point_valid(&self,p: &Point) -> bool { 
+        p.x >= 0 && p.y >= 0 && p.x < self.xsize && p.y < self.ysize // a point is in the curve if it's not negative and less than the bounds
     }
     pub fn iterate(&mut self,itercount:u32) {
         let mut rng = rand::thread_rng();
         for _ in 0..itercount {
-            // choose endpoint
             let endpoints = [0,self.path.len()-1];
-            let i1: usize = *endpoints.iter().choose(&mut rng).unwrap();
-            let p1 = &self.path[i1];
+            let i1: usize = *endpoints.iter().choose(&mut rng).unwrap(); // choose which endpoint to use
+            let p1 = &self.path[i1]; // get position of endpoint
 
             // construct vec of neighbors and prune to valid ones
-            let mut neighbors = vec![Point{x: p1.x+1,y: p1.y},
-            Point{x: p1.x-1, y: p1.y},Point{x: p1.x,y: p1.y+1},Point{x: p1.x,y: p1.y-1}];
+            let mut neighbors = vec![
+                Point{x: p1.x+1,y: p1.y},
+                Point{x: p1.x-1, y: p1.y},
+                Point{x: p1.x,y: p1.y+1},
+                Point{x: p1.x,y: p1.y-1}
+            ];
             neighbors.retain(|p0| self.point_valid(p0));
+            // TODO: improve efficiency by pruning out already-connected neighbor.
 
-            let p2 = neighbors.iter().choose(&mut rng).unwrap();
-            let i2 = self.path.iter().position(|p0| p0 == p2).unwrap();
+            let p2 = neighbors.iter().choose(&mut rng).unwrap(); // choose random neighbor position
+            let i2 = self.path.iter().position(|p0| p0 == p2).unwrap(); //
 
             if i1 == 0 {
                 self.path[i1..i2].reverse()

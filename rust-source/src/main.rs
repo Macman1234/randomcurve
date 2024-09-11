@@ -24,7 +24,7 @@ struct Args {
     #[arg(value_enum,short, long, default_value_t = StyleKind::Arc)]
     style: StyleKind,
 
-    /// Turns on animation mode for command line
+    /// Turns on terminal animation mode
     #[arg(short,long,action)]
     animation: bool,
 
@@ -45,10 +45,15 @@ fn main() {
                 if (curve.xsize,curve.ysize) != (xsize,ysize) { // if it's changed from when the curve was last generated
                     curve = mh_curve::MansfieldCurve::new(xsize,ysize); // new curve
                 }
-                curve.iterate(10); // iterate TODO: make this not hardcoded
+                // TODO: make this not hardcoded
+                // TODO: maybe make this dependent on time rather than per-screen write? currently the rate of how fast it 
+                // can iterate the curve as well as how fast it can write to the screen. as such, iterations per display will
+                // show up as different rates depending on both CPU speed and terminal writeout speed. basing it on real time measurements
+                // would avoid this but would be harder to implement.
+                curve.iterate(10); // iterate 
                 print!("{}",make_curve_string(&curve, &args.style)); // generate string of curve and print it
                 for _ in 0..curve.ysize-1 { // move cursor to top of generated curve so it can be overwritten
-                    print!("\x1b[F");
+                    print!("\x1b[F"); // TODO : maybe implement this some other way?
                 }
             }
             else {
