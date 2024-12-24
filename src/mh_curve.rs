@@ -18,35 +18,6 @@ impl PartialEq for Point {
     }
 }
 
-// I totally forget why this exists. I forget even more why I kept it.
-/*
-enum Edge {
-    Top,
-    TopRight,
-    Right,
-    BottomRight,
-    Bottom,
-    BottomLeft,
-    Left,
-    TopLeft,
-    None
-}
-
-fn check_edge(p: Point, xsize: i32, ysize: i32) -> Edge {
-    if p.x == 0 {
-        if p.y == 0 {Edge::TopLeft}
-        else if p.y == ysize {Edge::BottomLeft}
-        else {Edge::Left}
-    }
-    else if p.x == xsize {
-        if p.y == 0 {Edge::TopRight}
-        else if p.y == ysize {Edge::BottomRight}
-        else {Edge::Right}
-    }
-    else {Edge::None}
-}
-*/
-
 pub struct MansfieldCurve {
     pub xsize: i32,
     pub ysize: i32,
