@@ -19,11 +19,22 @@ pub fn get_curve_char(curve: &mh_curve::MansfieldCurve, idx: usize, style: &Styl
         x_diff_after = current_point.x - later_neighbor.x;
         y_diff_after = current_point.y - later_neighbor.y;
     }
+    else if curve.closed() {
+        let later_neighbor = &curve.path[0];
+        x_diff_after = current_point.x - later_neighbor.x;
+        y_diff_after = current_point.y - later_neighbor.y;
+    }
     if idx != 0 {
         let before_neighbor = &curve.path[idx - 1];
         x_diff_before = current_point.x - before_neighbor.x;
         y_diff_before = current_point.y - before_neighbor.y;
     }
+    else if curve.closed() {
+        let before_neighbor = &curve.path[curve.path.len() - 1];
+        x_diff_before = current_point.x - before_neighbor.x;
+        y_diff_before = current_point.y - before_neighbor.y;
+    }
+    
     match (x_diff_after, y_diff_after, x_diff_before, y_diff_before) {
         (1, 0, 0, -1) | (0, -1, 1, 0) => match style {
             StyleKind::Light => '┐',

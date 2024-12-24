@@ -20,6 +20,10 @@ struct Args {
     #[arg(short, long, default_value_t = 10000)]
     itercount: u32,
 
+    /// Turns on wait till closed mode
+    #[arg(short,long,action)]
+    closed: bool,
+
     /// Style of lines to draw
     #[arg(value_enum,short, long, default_value_t = StyleKind::Arc)]
     style: StyleKind,
@@ -66,7 +70,11 @@ fn main() {
     else {
         let mut curve = mh_curve::MansfieldCurve::new(args.xsize,args.ysize);
         curve.iterate(args.itercount);
-
+        if args.closed{
+            while !curve.is_closed(){
+                curve.iterate(1);
+            }
+        }
         println!("{}",make_curve_string(&curve, &args.style));
     }
 }

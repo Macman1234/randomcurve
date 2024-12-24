@@ -52,8 +52,16 @@ impl MansfieldCurve {
         }
         curve
     }
-    fn point_valid(&self,p: &Point) -> bool { 
+    fn point_valid(&self, p: &Point) -> bool { 
         p.x >= 0 && p.y >= 0 && p.x < self.xsize && p.y < self.ysize // a point is in the curve if it's not negative and less than the bounds
+    }
+    fn is_neighbor(&self, p0: &Point, p1: &Point) -> bool {
+        let xdist = (p0.x - p1.x).abs();
+        let ydist = (p0.y - p1.y).abs();
+        xdist + ydist == 1
+    }
+    pub fn is_closed(&self) -> bool {
+        self.is_neighbor(&self.path[0],&self.path[self.path.len()-1])
     }
     pub fn iterate(&mut self,itercount:u32) {
         let mut rng = rand::thread_rng();
