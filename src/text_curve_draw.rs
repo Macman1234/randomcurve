@@ -19,7 +19,7 @@ pub fn get_curve_char(curve: &mh_curve::MansfieldCurve, idx: usize, style: &Styl
         x_diff_after = current_point.x - later_neighbor.x;
         y_diff_after = current_point.y - later_neighbor.y;
     }
-    else if curve.closed() {
+    else if curve.is_closed() {
         let later_neighbor = &curve.path[0];
         x_diff_after = current_point.x - later_neighbor.x;
         y_diff_after = current_point.y - later_neighbor.y;
@@ -29,7 +29,7 @@ pub fn get_curve_char(curve: &mh_curve::MansfieldCurve, idx: usize, style: &Styl
         x_diff_before = current_point.x - before_neighbor.x;
         y_diff_before = current_point.y - before_neighbor.y;
     }
-    else if curve.closed() {
+    else if curve.is_closed() {
         let before_neighbor = &curve.path[curve.path.len() - 1];
         x_diff_before = current_point.x - before_neighbor.x;
         y_diff_before = current_point.y - before_neighbor.y;
