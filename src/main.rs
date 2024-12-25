@@ -70,8 +70,8 @@ fn main() {
     else {
         let mut curve = mh_curve::MansfieldCurve::new(args.xsize,args.ysize);
         curve.iterate(args.itercount);
-        if args.closed{
-            while !curve.is_closed(){
+        if args.closed { // if we want a closed curve
+            while !curve.is_closed(){ // iterate it until the ends are neighbors
                 curve.iterate(1);
             }
         }

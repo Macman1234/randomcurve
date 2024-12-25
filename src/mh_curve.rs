@@ -81,7 +81,7 @@ impl MansfieldCurve {
             // TODO: improve efficiency by pruning out already-connected neighbor.
 
             let p2 = neighbors.iter().choose(&mut rng).unwrap(); // choose random neighbor position
-            let i2 = self.path.iter().position(|p0| p0 == p2).unwrap(); //
+            let i2 = self.path.iter().position(|p0| p0 == p2).unwrap(); // get index of chosen neighbor
 
             if i1 == 0 {
                 self.path[i1..i2].reverse()
