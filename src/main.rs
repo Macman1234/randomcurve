@@ -1,6 +1,8 @@
 mod mh_curve;
 mod text_curve_draw;
 use text_curve_draw::{make_curve_string,StyleKind};
+mod svg_curve_draw;
+use svg_curve_draw::{make_curve_path_file};
 
 use term_size;
 use clap::Parser;
@@ -32,6 +34,9 @@ struct Args {
     #[arg(short,long,action)]
     animation: bool,
 
+    /// Turns on svg mode
+    #[arg(long,action)]
+    svg: bool,
 }
 
 fn main() {
@@ -75,6 +80,7 @@ fn main() {
                 curve.iterate(1);
             }
         }
-        println!("{}",make_curve_string(&curve, &args.style));
+        if args.svg {println!("{}",make_curve_path_file(&curve, 40))}
+        else {println!("{}",make_curve_string(&curve, &args.style))}
     }
 }
