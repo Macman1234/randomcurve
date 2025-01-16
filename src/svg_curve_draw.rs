@@ -8,21 +8,14 @@ pub fn make_curve_path_file(curve: &mh_curve::MansfieldCurve, scale: i32) -> Str
 }
 
 fn make_curve_path(curve: &mh_curve::MansfieldCurve, scale: i32) -> String {
-    let mut path_string: String = "<path d=\"".to_string();
-    let mut first: bool = true;
+    let mut path_string: String = "<polyline points=\"".to_string();
     for p in curve.path.iter() {
-        if first { 
-            let cmd = format!("M{0} {1}", (p.x+1)*scale,(p.y+1)*scale);
-            first = false;
-            path_string = [path_string, cmd].join(" ");
-        }
-        else {
-            let cmd = format!("L{0} {1}", (p.x+1)*scale,(p.y+1)*scale);
-            path_string = [path_string, cmd].join(" ");
-        }
+        let cmd = format!("{0},{1}", (p.x+1)*scale,(p.y+1)*scale);
+        path_string = [path_string, cmd].join(" ");
+
     };
     if curve.is_closed() {
-        let cmd = format!("L{0} {1}", (curve.path[0].x+1)*scale,(curve.path[0].y+1)*scale);
+        let cmd = format!("{0},{1}", (curve.path[0].x+1)*scale,(curve.path[0].y+1)*scale);
         path_string = [path_string, cmd].join(" ");
     }
     let end = format!("\" style=\"fill:none;stroke:black;stroke-width:{0};stroke-linecap:square\" />",scale/2);

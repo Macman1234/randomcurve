@@ -150,3 +150,6 @@ Cargo.lock
 
 # vscode stuff
 .vscode/
+
+
+out/
