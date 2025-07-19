@@ -1,12 +1,12 @@
 mod mh_curve;
-mod text_curve_draw;
-use text_curve_draw::{make_curve_string,StyleKind};
-mod svg_curve_draw;
-use svg_curve_draw::{make_curve_path_file};
+//mod text_curve_draw;
+//use text_curve_draw::{make_curve_string,StyleKind};
+//mod svg_curve_draw;
+//use svg_curve_draw::{make_curve_path_file};
 
-use term_size;
-use clap::Parser;
-
+//use term_size;
+//use clap::Parser;
+/*
 #[derive(Parser, Debug)]
 #[command(author, version, about, long_about=None)]
 struct Args {
@@ -38,10 +38,20 @@ struct Args {
     #[arg(long,action)]
     svg: bool,
 }
-
+*/
 fn main() {
 
-    let args = Args::parse();
+    let curve = mh_curve::MansfieldCurve::new(vec![2,2,2,2,2]);
+    
+    for i in 0..curve.path.len() {
+        print!("{} ",i);
+        if i > 0 {
+            print!{"{} ", curve.is_neighbor(&curve.path[i],&curve.path[i-1])}
+        }
+        println!("{}", curve.path[i])
+    }
+
+    /*let args = Args::parse();
 
     // If animation mode is on, continuously iterate curve and display to terminal.
     // Generate new curve if terminal size is changed
@@ -82,5 +92,5 @@ fn main() {
         }
         if args.svg {println!("{}",make_curve_path_file(&curve, 40))}
         else {println!("{}",make_curve_string(&curve, &args.style))}
-    }
+    }*/
 }

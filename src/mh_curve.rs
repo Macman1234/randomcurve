@@ -2,25 +2,24 @@ use rand::seq::IteratorRandom;
 use std::fmt;
 
 pub struct Point {
-    pub x: i32,
-    pub y: i32
+    pub pos: Vec<usize>
 }
 
 impl fmt::Display for Point {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f,"({},{})", self.x, self.y)
+        write!(f,"{:?}", self.pos)
     }
 }
 
 impl PartialEq for Point {
     fn eq(&self, other: &Self) -> bool {
-        self.x == other.x && self.y == other.y
+        self.pos == other.pos
     }
 }
 
 pub struct MansfieldCurve {
-    pub xsize: i32,
-    pub ysize: i32,
+    pub size: Vec<usize>,
+    pub dim: usize,
     pub path: Vec<Point>,
 }
 
@@ -28,12 +27,12 @@ pub struct MansfieldCurve {
 // based on position are faster. might actually be more overhead than lookup for each
 // neighbor...
 impl MansfieldCurve {
-    pub fn new(xsize: i32, ysize: i32) -> MansfieldCurve{
+    pub fn new(size: Vec<usize>) -> MansfieldCurve{
 
         // Construct empty struct
         let mut curve = MansfieldCurve {
-            xsize,
-            ysize,
+            size: size.clone(), //why rust why. why can't i take the length without taking ownership
+            dim: size.len(),
             path: Vec::new()
         };
 
@@ -41,25 +40,39 @@ impl MansfieldCurve {
         // If using this for something more rigorous than
         // fun animations, please investigate whether this poses
         // any problems with density/energy
-        for n in 0..(xsize*ysize) {
-            let y = n / xsize;
+        for n in 0..(size.iter().product()) {
+            let mut pos: Vec<usize> = Vec::new();
+            for d in 0..curve.dim {
+                // i think divisor is based on product off all next dimensions???
+                let nextdimprodsize = if d == curve.dim-1 { 1 } else {size[d+1..curve.dim].iter().product() };
+                // direction is based on parity of previous dimension values, summed???
+                let prevdimsumpos = if d == 0 { 1 } else {pos[0..d].iter().sum() }; 
+                let p = if prevdimsumpos % 2 == 0 {
+                    (n / nextdimprodsize) % size[d]
+                } else {
+                    size[d] - ((n / nextdimprodsize) % size[d]) - 1
+                };
+                pos.push(p);
+            }
+
+            /*let y = n / xsize;
             let x = if y % 2 == 0 {
                 n % xsize
             } else {
                 xsize - (n % xsize) -1
-            };
-            curve.path.push(Point{x,y})
+            };*/
+            curve.path.push(Point{pos})
         }
         curve
     }
-    fn point_valid(&self, p: &Point) -> bool { 
+    pub fn is_neighbor(&self, p0: &Point, p1: &Point) -> bool {
+        let distances: isize = (0..p0.pos.len()).map(|n| (p0.pos[n] as isize - p1.pos[n] as isize).abs()).sum();
+        distances == 1
+    }
+    /*fn point_valid(&self, p: &Point) -> bool { 
         p.x >= 0 && p.y >= 0 && p.x < self.xsize && p.y < self.ysize // a point is in the curve if it's not negative and less than the bounds
     }
-    fn is_neighbor(&self, p0: &Point, p1: &Point) -> bool {
-        let xdist = (p0.x - p1.x).abs();
-        let ydist = (p0.y - p1.y).abs();
-        xdist + ydist == 1
-    }
+    
     pub fn is_closed(&self) -> bool {
         self.is_neighbor(&self.path[0],&self.path[self.path.len()-1])
     }
@@ -89,5 +102,5 @@ impl MansfieldCurve {
                 self.path[i2+1..i1+1].reverse()
             }
         }
-    }
+    }*/
 }
