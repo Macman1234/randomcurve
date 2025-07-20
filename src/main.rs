@@ -1,26 +1,20 @@
 mod mh_curve;
 mod text_curve_draw;
 use text_curve_draw::{make_curve_string,StyleKind};
-use crate::debug_curve_print::print_curve_debug_string;
-use crate::csv_curve_print::print_curve_csv_string;
+use crate::csv_curve_print::make_curve_csv_string;
 mod csv_curve_print;
-mod debug_curve_print;
-//mod svg_curve_draw;
-//use svg_curve_draw::{make_curve_path_file};
+use crate::openscad_curve_generate::make_curve_openscad_file;
+mod openscad_curve_generate;
 
-//use term_size;
-//use clap::Parser;
-/*
+use term_size;
+use clap::{Parser, ValueEnum};
+
 #[derive(Parser, Debug)]
 #[command(author, version, about, long_about=None)]
 struct Args {
-    /// Horizontal size of the curve
-    #[arg(short, default_value_t = 16)]
-    xsize: i32,
-
-    /// Vertical size of the curve
-    #[arg(short, default_value_t = 16)]
-    ysize: i32,
+    /// dimensions of the curve
+    #[arg(short, value_parser, value_delimiter = ',', default_values_t = vec![16,16])]
+    dimensions: Vec<usize>,
 
     /// Number of Monte Carlo iterations to randomize the curve
     #[arg(short, long, default_value_t = 10000)]
@@ -30,66 +24,89 @@ struct Args {
     #[arg(short,long,action)]
     closed: bool,
 
-    /// Style of lines to draw
-    #[arg(value_enum,short, long, default_value_t = StyleKind::Arc)]
+    /// choose display output mode
+    #[arg(value_enum, short, long, default_value_t = DisplayMode::Terminal)]
+    mode: DisplayMode,
+
+    /// Style of lines to draw in terminal mode
+    #[arg(value_enum, short, long, default_value_t = StyleKind::Arc)]
     style: StyleKind,
-
-    /// Turns on terminal animation mode
-    #[arg(short,long,action)]
-    animation: bool,
-
-    /// Turns on svg mode
-    #[arg(long,action)]
-    svg: bool,
 }
-*/
+
+#[derive(Copy, Clone, Debug, PartialEq, Eq, PartialOrd, Ord, ValueEnum)]
+enum DisplayMode {
+    /// One-shot as utf-8 box chars to the terminal
+    Terminal,
+    /// animated terminal utf-8 box chars
+    TermAnim,
+    /// CSV to stdout
+    CSV,
+    /// openSCAD file to stdout
+    OpenSCAD,
+}
+
 fn main() {
+    let args = Args::parse();
 
-    let mut curve = mh_curve::MansfieldCurve::new(vec![10,10,10]);
-    curve.iterate(100000);
-    print_curve_csv_string(&curve);
-
-
-    /*let args = Args::parse();
-
-    // If animation mode is on, continuously iterate curve and display to terminal.
-    // Generate new curve if terminal size is changed
-    if args.animation{
-        let mut curve = mh_curve::MansfieldCurve::new(0,0); // initialize empty curve
-        loop {
-            if let Some((w, h)) = term_size::dimensions() { // get size of terminal
-                let xsize: i32 = w.try_into().unwrap(); // cast to i32 TODO: make xsize type usize
-                let ysize: i32 = h.try_into().unwrap();
-                if (curve.xsize,curve.ysize) != (xsize,ysize) { // if it's changed from when the curve was last generated
-                    curve = mh_curve::MansfieldCurve::new(xsize,ysize); // new curve
-                }
-                // TODO: make this not hardcoded
-                // TODO: maybe make this dependent on time rather than per-screen write? currently the rate of how fast it 
-                // can iterate the curve as well as how fast it can write to the screen. as such, iterations per display will
-                // show up as different rates depending on both CPU speed and terminal writeout speed. basing it on real time measurements
-                // would avoid this but would be harder to implement.
-                curve.iterate(10); // iterate 
-                print!("{}",make_curve_string(&curve, &args.style)); // generate string of curve and print it
-                for _ in 0..curve.ysize-1 { // move cursor to top of generated curve so it can be overwritten
-                    print!("\x1b[F"); // TODO : maybe implement this some other way?
+    match args.mode {
+        DisplayMode::Terminal => {
+            if args.dimensions.len() != 2 {panic!("only 2d for terminal")}
+            let mut curve = mh_curve::MansfieldCurve::new(args.dimensions);
+            curve.iterate(args.itercount);
+            if args.closed { // if we want a closed curve
+                while !curve.is_closed(){ // iterate it until the ends are neighbors
+                    curve.iterate(1);
                 }
             }
-            else {
-                panic!("Unable to get term size");
-            }  
-        }
+            println!("{}",make_curve_string(&curve, &args.style))
+        },
+        DisplayMode::TermAnim => {
+            if args.dimensions.len() != 2 {panic!("only 2d for anim")}
+            let mut curve = mh_curve::MansfieldCurve::new(args.dimensions); // initialize empty curve
+            loop {
+                if let Some((w, h)) = term_size::dimensions() { // get size of terminal
+                    let xsize = w; // TODO: look into making smaller uint
+                    let ysize = h;
+                    if (curve.size[0],curve.size[1]) != (xsize,ysize) { // if it's changed from when the curve was last generated
+                        curve = mh_curve::MansfieldCurve::new(vec![xsize,ysize]); // new curve
+                    }
+                    // TODO: make this not hardcoded
+                    // TODO: maybe make this dependent on time rather than per-screen write? currently the rate of how fast it 
+                    // can iterate the curve as well as how fast it can write to the screen. as such, iterations per display will
+                    // show up as different rates depending on both CPU speed and terminal writeout speed. basing it on real time measurements
+                    // would avoid this but would be harder to implement.
+                    curve.iterate(10); // iterate 
+                    print!("{}",make_curve_string(&curve, &args.style)); // generate string of curve and print it
+                    for _ in 0..curve.size[1]-1 { // move cursor to top of generated curve so it can be overwritten
+                        print!("\x1b[F"); // TODO : maybe implement this some other way?
+                    }
+                }
+                else {
+                    panic!("Unable to get term size");
+                }  
+            }
+        },
+        DisplayMode::CSV => {
+            // CSV can be any dimension
+            let mut curve = mh_curve::MansfieldCurve::new(args.dimensions);
+            curve.iterate(args.itercount);
+            if args.closed { // if we want a closed curve
+                while !curve.is_closed(){ // iterate it until the ends are neighbors
+                    curve.iterate(1);
+                }
+            }
+            println!("{}",make_curve_csv_string(&curve))
+        },
+        DisplayMode::OpenSCAD => {
+            if args.dimensions.len() != 2 && args.dimensions.len() != 3 {panic!("only 2d or 3d for openscad")}
+            let mut curve = mh_curve::MansfieldCurve::new(args.dimensions);
+            curve.iterate(args.itercount);
+            if args.closed { // if we want a closed curve
+                while !curve.is_closed(){ // iterate it until the ends are neighbors
+                    curve.iterate(1);
+                }
+            }
+            println!("{}",make_curve_openscad_file(&curve))
+        },
     }
-
-    // if not in animation mode, just generate a curve, iterate it by itercount and print it
-    else {
-        let mut curve = mh_curve::MansfieldCurve::new(args.xsize,args.ysize);
-        curve.iterate(args.itercount);
-        if args.closed { // if we want a closed curve
-            while !curve.is_closed(){ // iterate it until the ends are neighbors
-                curve.iterate(1);
-            }
-        }
-        if args.svg {println!("{}",make_curve_path_file(&curve, 40))}
-        else {println!("{}",make_curve_string(&curve, &args.style))}
-    }*/
 }
