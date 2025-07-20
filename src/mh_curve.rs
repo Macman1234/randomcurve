@@ -69,10 +69,6 @@ impl MansfieldCurve {
         let distances: isize = (0..p0.pos.len()).map(|n| (p0.pos[n] as isize - p1.pos[n] as isize).abs()).sum();
         distances == 1
     }
-    /*fn point_valid(&self, p: &Point) -> bool { 
-        p.x >= 0 && p.y >= 0 && p.x < self.xsize && p.y < self.ysize // a point is in the curve if it's not negative and less than the bounds
-    }
-    
     pub fn is_closed(&self) -> bool {
         self.is_neighbor(&self.path[0],&self.path[self.path.len()-1])
     }
@@ -83,14 +79,21 @@ impl MansfieldCurve {
             let i1: usize = *endpoints.iter().choose(&mut rng).unwrap(); // choose which endpoint to use
             let p1 = &self.path[i1]; // get position of endpoint
 
-            // construct vec of neighbors and prune to valid ones
-            let mut neighbors = vec![
-                Point{x: p1.x+1,y: p1.y},
-                Point{x: p1.x-1, y: p1.y},
-                Point{x: p1.x,y: p1.y+1},
-                Point{x: p1.x,y: p1.y-1}
-            ];
-            neighbors.retain(|p0| self.point_valid(p0));
+            // construct vec of neighbors
+            let mut neighbors: Vec<Point> = Vec::new();
+            for d in 0..self.dim {
+                if p1.pos[d] > 0 {
+                    let mut pos = p1.pos.clone();
+                    pos[d] = pos[d] - 1;
+                    neighbors.push(Point{pos});
+                };
+                if p1.pos[d] < self.size[d] - 1 {
+                    let mut pos = p1.pos.clone();
+                    pos[d] = pos[d] + 1;
+                    neighbors.push(Point{pos});
+                }
+            }
+
             // TODO: improve efficiency by pruning out already-connected neighbor.
 
             let p2 = neighbors.iter().choose(&mut rng).unwrap(); // choose random neighbor position
@@ -102,5 +105,5 @@ impl MansfieldCurve {
                 self.path[i2+1..i1+1].reverse()
             }
         }
-    }*/
+    }
 }

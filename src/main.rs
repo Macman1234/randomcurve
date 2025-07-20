@@ -1,6 +1,10 @@
 mod mh_curve;
-//mod text_curve_draw;
-//use text_curve_draw::{make_curve_string,StyleKind};
+mod text_curve_draw;
+use text_curve_draw::{make_curve_string,StyleKind};
+use crate::debug_curve_print::print_curve_debug_string;
+use crate::csv_curve_print::print_curve_csv_string;
+mod csv_curve_print;
+mod debug_curve_print;
 //mod svg_curve_draw;
 //use svg_curve_draw::{make_curve_path_file};
 
@@ -41,15 +45,10 @@ struct Args {
 */
 fn main() {
 
-    let curve = mh_curve::MansfieldCurve::new(vec![2,2,2,2,2]);
-    
-    for i in 0..curve.path.len() {
-        print!("{} ",i);
-        if i > 0 {
-            print!{"{} ", curve.is_neighbor(&curve.path[i],&curve.path[i-1])}
-        }
-        println!("{}", curve.path[i])
-    }
+    let mut curve = mh_curve::MansfieldCurve::new(vec![10,10,10]);
+    curve.iterate(100000);
+    print_curve_csv_string(&curve);
+
 
     /*let args = Args::parse();
 
